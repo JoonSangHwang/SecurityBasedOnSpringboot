@@ -1,6 +1,28 @@
-* 시큐리티 의존성 추가
-- 시큐리티 초기화 작업 및 보안 설정이 이루어짐 (웹 보안 기능 자동 연동)
-- 모든 요청은 인증이 필수가 됨
+①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂☆∧∨
+┌────────┐
+│       ┬│
+│       ├┼┤
+│        │┴
+└────────┘
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+☆ 시큐리티 의존성 추가
+- 시큐리티 초기화 작업 및 보안 설정이 이루어짐 (웹 보안 기능 자동 연동 활성화)
+- 이제 모든 요청은 인증이 필수가 됨
 - 인증 방식
     : 폼 로그인 방식
     : httpBasic 로그인 방식
@@ -8,3 +30,38 @@
     : ID - USER
     : PW - 로그 확인 (Using generated security password: *********)
 - 추가적으로 계정, 권한, DB 연동 등 추가적인 보안 기능은 별도로 구현 필요함
+
+☆ 사용자 정의 보안 기능 구현
+
+
+
+
+
+<<스프링 시큐리티의 웹 보안 기능 초기화 및 설정>>                         <<사용자 정의 보안 클래스>>
+    ┌────────────────────────────┐              Inheritance             ┌──────────────┐
+    │WebSecurityConfigurerAdapter│<<────────────────────────────────────│SecurityConfig│
+    └──────────────┬─────────────┘                                      └──────────────┘
+                   │
+                   │
+                   │
+                   ∨
+                   ∨
+<<세부적인 보안 기능을 설정할 수 있는 API 제공>>
+            ┌────────────┐         ┌───────┐
+            │HttpSecurity├────┬────│AuthAPI│────┬────> http.formLogin()
+            └────────────┘    │    └───────┘    ├────> http.logout()
+                              │                 ├────> http.csrf()
+                              │                 ├────> http.httpBasic()
+                              │                 ├────> http.SessionManagement()
+                              │                 ├────> http.RememberMe()
+                              │                 ├────> http.ExceptionHandling()
+                              │                 └────> http.addFilter()
+                              │    ┌───────┐
+                              └────│AprvAPI│────┬────> http.authorizeRequests()
+                                   └───────┘    ├────> http.antMatchers(/admin)
+                                                ├────> http.hasRole(USER)
+                                                ├────> http.permitAll()
+                                                ├────> http.authenticated()
+                                                ├────> http.fullyAuthentication()
+                                                ├────> http.access(hasRole(USER))
+                                                └────> http.denyAll()
