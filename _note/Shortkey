@@ -3,6 +3,9 @@ Alt + Ins   : Generate
 Alt + Enter : Show Context Actions
 Ctrl + Shift + T : Test Class 생성
 
+Shift + F10 : Run
+Ctrl + F5   : Rerun
+
 
 # 참고
 psvm        : public static void main
