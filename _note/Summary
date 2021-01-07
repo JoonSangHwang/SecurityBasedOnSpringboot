@@ -48,8 +48,15 @@
                    ∨
 <<세부적인 보안 기능을 설정할 수 있는 API 제공>>
             ┌────────────┐         ┌───────┐
-            │HttpSecurity├────┬────│AuthAPI│────┬────> http.formLogin()
-            └────────────┘    │    └───────┘    ├────> http.logout()
+            │HttpSecurity├────┬────│AuthAPI│────┬────> http.formLogin() : Form login authentication method ────┬────> .loginPage("/loginPage")          : 로그인 화면 (로그인 인증을 받지 않아도 되는 페이지 권한 설정 필요)
+            └────────────┘    │    └───────┘    │                                                              ├────> .defaultSuccessUrl("/")           : 인증 성공 시, 이동 URL
+                              │                 │                                                              ├────> .failureUrl("/login")             : 인증 실패 시, 이동 URL
+                              │                 │                                                              ├────> .usernameParameter("user")        : 아이디 파라미터명 설정
+                              │                 │                                                              ├────> .passwordParameter("pw")          : 비밀번호 파라미터명 설정
+                              │                 │                                                              ├────> .loginProcessingUrl("/logn_proc") : Form 태그의 Action URL
+                              │                 │                                                              ├────> .successHandler                   : 인증 성공 시, 핸들러
+                              │                 │                                                              └────> .failureHandler                   : 인증 실패 시, 핸들러
+                              │                 ├────> http.logout()
                               │                 ├────> http.csrf()
                               │                 ├────> http.httpBasic()
                               │                 ├────> http.SessionManagement()
@@ -65,3 +72,11 @@
                                                 ├────> http.fullyAuthentication()
                                                 ├────> http.access(hasRole(USER))
                                                 └────> http.denyAll()
+
+
+
+
+
+
+
+
