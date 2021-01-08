@@ -72,6 +72,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .alwaysRemember(true)                               // 리멤버가 체크 되지 않아도 항상 실행
                 .userDetailsService(userDetailsService);
 
+        http
+                .sessionManagement()
+                .invalidSessionUrl("/invalid")          // 세션이 유효하지 않을 때 이동 할 페이지
+                .sessionFixation().changeSessionId()    // 인증마다 세션 리프레시
+                .maximumSessions(1)                     // 최대 허용 가능 세션 수 , -1 : 무제한 로그인 세션 허용
+                .maxSessionsPreventsLogin(true)         // 동시 로그인 차단함,  (default 세션 만료:false)
+                .expiredUrl("/expired");  	            // 세션이 만료된 경우 이동 할 페이지
+
         /**
          * 로그아웃
          */

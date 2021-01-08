@@ -63,7 +63,12 @@
                               │                 │                                             └────> .deleteCookies("remember-me")		                : 로그아웃 성공 후, 쿠키 삭제
                               │                 ├────> http.csrf()
                               │                 ├────> http.httpBasic()
-                              │                 ├────> http.SessionManagement()
+                              │                 ├────> http.SessionManagement() ────┬────> .maximumSessions(1)                  : 최대 허용 가능 세션 수 , (-1:무제한 로그인 세션 허용)
+                              │                 │                                   ├────> .maxSessionsPreventsLogin(true)      : 동시 로그인 차단함,  false (default 세션 만료: false)
+                              │                 │                                   ├────> .invalidSessionUrl("/invalid")       : 세션이 유효하지 않을 때 이동 할 페이지
+                              │                 │                                   ├────> .sessionFixation().changeSessionId() : 인증마다 세션 리프레시 (default: none)
+                              │                 │                                   └────> .expiredUrl("/expired")              : 세션이 만료된 경우 이동 할 페이지
+                              │                 │
                               │                 ├────> http.RememberMe() : Remember Me Cookies ────┬────> .rememberMeParameter("remember")	            : 파라미터 네임
                               │                 │                                                  ├────> .tokenValiditySeconds(3600)                   : Default 14일
                               │                 │                                                  ├────> .alwaysRemember(true)                         : 리멤버가 체크 되지 않아도 항상 실행
@@ -136,3 +141,8 @@
                    ┌──────────────────────────────────────┐
                    │            SuccessHandler            │
                    └──────────────────────────────────────┘
+
+
+# 세션 고정 보호
+: 기존 세션을 이용해 계속 인증 시, 공격자의 해킹이 들어올 수 있음
+: 인증을 할 때마다 새로운 세션 값 부여
