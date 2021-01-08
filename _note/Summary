@@ -55,11 +55,19 @@
                               │                 │                                                              ├────> .loginProcessingUrl("/logn_proc") : Form 태그의 Action URL
                               │                 │                                                              ├────> .successHandler                   : 인증 성공 시, 핸들러
                               │                 │                                                              └────> .failureHandler                   : 인증 실패 시, 핸들러
-                              │                 ├────> http.logout()
+                              │                 │
+                              │                 ├────> http.logout() : Form logout method ────┬────> .logoutUrl("/logout")                              : 로그아웃 URL
+                              │                 │                                             ├────> .logoutSuccessUrl("/login")				        : 로그아웃 성공 후, 처리 URL
+                              │                 │                                             ├────> .addLogoutHandler(new LogoutHandler())             : 로그아웃 핸들러
+                              │                 │                                             ├────> .logoutSuccessHandler(new LogoutSuccessHandler())  : 로그아웃 성공 후, 처리 Handler
+                              │                 │                                             └────> .deleteCookies("remember-me")		                : 로그아웃 성공 후, 쿠키 삭제
                               │                 ├────> http.csrf()
                               │                 ├────> http.httpBasic()
                               │                 ├────> http.SessionManagement()
-                              │                 ├────> http.RememberMe()
+                              │                 ├────> http.RememberMe() : Remember Me Cookies ────┬────> .rememberMeParameter("remember")	            : 파라미터 네임
+                              │                 │                                                  ├────> .tokenValiditySeconds(3600)                   : Default 14일
+                              │                 │                                                  ├────> .alwaysRemember(true)                         : 리멤버가 체크 되지 않아도 항상 실행
+                              │                 │                                                  └────> .userDetailsService(userDetailsService)       :
                               │                 ├────> http.ExceptionHandling()
                               │                 └────> http.addFilter()
                               │    ┌───────┐
