@@ -45,15 +45,34 @@
                    │
                    │
                    ∨
-                   ∨
 <<세부적인 보안 기능을 설정할 수 있는 API 제공>>
             ┌────────────┐         ┌───────┐
-            │HttpSecurity├────┬────│AuthAPI│────┬────> http.formLogin()
-            └────────────┘    │    └───────┘    ├────> http.logout()
+            │HttpSecurity├────┬────│AuthAPI│────┬────> http.formLogin() : Form login authentication method ────┬────> .loginPage("/loginPage")          : 로그인 화면 (로그인 인증을 받지 않아도 되는 페이지 권한 설정 필요)
+            └────────────┘    │    └───────┘    │                                                              ├────> .defaultSuccessUrl("/")           : 인증 성공 시, 이동 URL
+                              │                 │                                                              ├────> .failureUrl("/login")             : 인증 실패 시, 이동 URL
+                              │                 │                                                              ├────> .usernameParameter("user")        : 아이디 파라미터명 설정
+                              │                 │                                                              ├────> .passwordParameter("pw")          : 비밀번호 파라미터명 설정
+                              │                 │                                                              ├────> .loginProcessingUrl("/logn_proc") : Form 태그의 Action URL
+                              │                 │                                                              ├────> .successHandler                   : 인증 성공 시, 핸들러
+                              │                 │                                                              └────> .failureHandler                   : 인증 실패 시, 핸들러
+                              │                 │
+                              │                 ├────> http.logout() : Form logout method ────┬────> .logoutUrl("/logout")                              : 로그아웃 URL
+                              │                 │                                             ├────> .logoutSuccessUrl("/login")				        : 로그아웃 성공 후, 처리 URL
+                              │                 │                                             ├────> .addLogoutHandler(new LogoutHandler())             : 로그아웃 핸들러
+                              │                 │                                             ├────> .logoutSuccessHandler(new LogoutSuccessHandler())  : 로그아웃 성공 후, 처리 Handler
+                              │                 │                                             └────> .deleteCookies("remember-me")		                : 로그아웃 성공 후, 쿠키 삭제
                               │                 ├────> http.csrf()
                               │                 ├────> http.httpBasic()
-                              │                 ├────> http.SessionManagement()
-                              │                 ├────> http.RememberMe()
+                              │                 ├────> http.SessionManagement() ────┬────> .maximumSessions(1)                  : 최대 허용 가능 세션 수 , (-1:무제한 로그인 세션 허용)
+                              │                 │                                   ├────> .maxSessionsPreventsLogin(true)      : 동시 로그인 차단함,  false (default 세션 만료: false)
+                              │                 │                                   ├────> .invalidSessionUrl("/invalid")       : 세션이 유효하지 않을 때 이동 할 페이지
+                              │                 │                                   ├────> .sessionFixation().changeSessionId() : 인증마다 세션 리프레시 (default: none)
+                              │                 │                                   └────> .expiredUrl("/expired")              : 세션이 만료된 경우 이동 할 페이지
+                              │                 │
+                              │                 ├────> http.RememberMe() : Remember Me Cookies ────┬────> .rememberMeParameter("remember")	            : 파라미터 네임
+                              │                 │                                                  ├────> .tokenValiditySeconds(3600)                   : Default 14일
+                              │                 │                                                  ├────> .alwaysRemember(true)                         : 리멤버가 체크 되지 않아도 항상 실행
+                              │                 │                                                  └────> .userDetailsService(userDetailsService)       :
                               │                 ├────> http.ExceptionHandling()
                               │                 └────> http.addFilter()
                               │    ┌───────┐
@@ -65,3 +84,65 @@
                                                 ├────> http.fullyAuthentication()
                                                 ├────> http.access(hasRole(USER))
                                                 └────> http.denyAll()
+
+
+
+
+# 인증 API (로그인 Form 인증)
+                   ┌──────────────────────────────────────┐ = ① doFilter 에서 "로그인 페이지" 로 요청 했는지 Match
+                   │AbstractAuthenticationProcessingFilter│ = ③ attemptAuthentication() 로 인증 Authentication 객체 생성 및 전달
+                   └──────────────────────────────────────┘ = ⑥ 인증 결과를 SecurityContextHolder 에 저장
+                                     ∧
+                                     ∧
+                                     │Inheritance
+                                     │
+    ┌───────┐      ┌─────────────────┴────────────────────┐ = ② 사용자가 작성한 로그인과 패스워드를 추출하여 인증 객체 생성
+    │Request├─────>│UsernamePasswordAuthenticationFilter  │ = ⑤ Token 값을 담은 인증 Authentication 객체 반환
+    └───────┘      └─────────────────┬────────────────────┘
+                                     │            ∧
+                                     │            └────────────────────────────────┐
+                                     │                                             │
+                                     ∨                                             │
+                   ┌──────────────────────────────────────┐                        │
+                   │      AntPathRequestMatcher(/login)   │ = 1                    │
+                   └─────────────────┬────────────────────┘                        │
+                                     │                                             │
+                                     │                                             │
+                                     │                                             │
+                                     ∨                                             │
+                   ┌──────────────────────────────────────┐             ┌──────────┴────────────┐
+                   │ Authentication (Username + Password) │ = 2         │AuthenticationException│
+                   └─────────────────┬────────────────────┘             └───────────────────────┘
+                                     │                                             ∧
+                                     │ = 3                                         │
+                                     │                                             │ Fail
+                                     ∨                      Delegation             │
+                   ┌──────────────────────────────────────┬───────────> ┌──────────┴───────────┐
+                   │        AuthenticationManager         │             │AuthenticationProvider│ = ④ UsernamePasswordAuthenticationToken 생성
+                   └─────────────────┬────────────────────┘ <───────────┴──────────────────────┘
+                                     │                       Success
+                                     │ Token send
+                                     │
+                                     ∨
+                   ┌──────────────────────────────────────┐
+                   │ Authentication (User + Authorities)  │ = 5
+                   └─────────────────┬────────────────────┘
+                                     │
+                                     │
+                                     │
+                                     ∨
+                   ┌──────────────────────────────────────┐
+                   │           SecurityContext            │ = 6
+                   └─────────────────┬────────────────────┘
+                                     │
+                                     │
+                                     │
+                                     ∨
+                   ┌──────────────────────────────────────┐
+                   │            SuccessHandler            │
+                   └──────────────────────────────────────┘
+
+
+# 세션 고정 보호
+: 기존 세션을 이용해 계속 인증 시, 공격자의 해킹이 들어올 수 있음
+: 인증을 할 때마다 새로운 세션 값 부여
