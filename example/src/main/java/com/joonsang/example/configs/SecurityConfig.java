@@ -1,6 +1,7 @@
 package com.joonsang.example.configs;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -18,25 +20,16 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        // 패스워드 생성 (기본 패스워드는 생성 안 됨)
-        String password = passwordEncoder().encode("1111");
-
-        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
-        auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER", "USER");
-        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN", "MANAGER", "USER");
-    }
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     /**
-     * 비밀번호를 안전하게 암호화 하도록 제공
-     * @return
+     * 커스터마이징 userDetailsService 인증 처리
+     * - 로그인 할 때, DB 에서 사용자를 조회하여 인증 처리함.
      */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // 패스워드 암호화 처리
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
     }
 
     @Override
@@ -71,5 +64,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
+
+
+
+
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//
+//        // 패스워드 생성 (기본 패스워드는 생성 안 됨)
+//        String password = passwordEncoder().encode("1111");
+//
+//        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
+//        auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER", "USER");
+//        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN", "MANAGER", "USER");
+//    }
+//
+//    /**
+//     * 비밀번호를 안전하게 암호화 하도록 제공
+//     * @return
+//     */
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        // 패스워드 암호화 처리
+//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//    }
 
 }
