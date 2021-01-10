@@ -27,7 +27,6 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
-	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
 	compile 'org.modelmapper:modelmapper:2.3.8'
 
 	compileOnly 'org.projectlombok:lombok'
