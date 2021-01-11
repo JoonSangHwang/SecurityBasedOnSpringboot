@@ -149,3 +149,7 @@
 
 # PasswordEncoder
 : 비밀번호 암호화
+
+# 인증에 포함 된 추가 정보
+: 인증 과정 중 전달 된 데이터를 저장 - WebAuthenticationDetails
+: webAuthenticationDetails 객체를 생성 - AuthenticationDetailsSource

@@ -1,11 +1,12 @@
 package com.joonsang.example.configs;
 
 
-import com.joonsang.example.configs.provider.CustomAuthenticationProvider;
+import com.joonsang.example.configs.provider.FormAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private AuthenticationDetailsSource authenticationDetailsSource;
 
     /**
      * 시큐리티 세팅
@@ -52,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")                    // 로그인 페이지
                 .loginProcessingUrl("/login_proc")      // Form 태그의 Action URL
+                .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")                 // 인증 성공 시, 이동 URL
                 .permitAll()
         ;
@@ -80,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new CustomAuthenticationProvider();
+        return new FormAuthenticationProvider(passwordEncoder());
     }
 
 
