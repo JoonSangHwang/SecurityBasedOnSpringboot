@@ -27,12 +27,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 시큐리티 세팅
+     *
+     * 참고: CSRF 기능이 활성화 되어 있을 경우에는 POST 방식의 요청에 한해서 LogoutFilter 가 동작
+     *      CSRF 기능을 비활성화 할 경우에는 GET 방식도 LogoutFilter 가 처리
      */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 
         CharacterEncodingFilter filter = new CharacterEncodingFilter();
-
         filter.setEncoding("UTF-8");
         filter.setForceEncoding(true);
 
@@ -77,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    private AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider() {
         return new CustomAuthenticationProvider();
     }
 

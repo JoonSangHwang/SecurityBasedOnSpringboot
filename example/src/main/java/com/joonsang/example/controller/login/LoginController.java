@@ -17,13 +17,22 @@ public class LoginController {
         return "user/login/login";
     }
 
-
+    /**
+     * 로그아웃
+     * 1. <form> 태그를 사용하여 POST 요청
+     * 2. <a> 태그를 사용하여 GET 요청 (v)
+     */
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response){
+
+        // 인증 객체
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 세션 무효화 + 인증 객체 empty + SecurityContextHolder Clean
         if (authentication != null){
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
+
         return "redirect:/login";
     }
 
