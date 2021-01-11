@@ -1,7 +1,7 @@
 package com.joonsang.example.configs;
 
 
-import com.joonsang.example.configs.handler.FormAuthenticationSuccessHandler;
+import com.joonsang.example.configs.handler.*;
 import com.joonsang.example.configs.provider.FormAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -17,8 +17,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -28,10 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private AuthenticationDetailsSource authenticationDetailsSource;        // DI 대상: FormAuthenticationSuccessHandler
+    private AuthenticationDetailsSource authenticationDetailsSource;            // DI 대상: FormAuthenticationDetailsSource
 
     @Autowired
-    private FormAuthenticationSuccessHandler formAuthenticationSuccessHandler;
+    private formAuthenticationFailureHandler formAuthenticationFailureHandler;  // DI 대상: FormAuthenticationFailureHandler
+
+    @Autowired
+    private FormAuthenticationSuccessHandler formAuthenticationSuccessHandler;  // DI 대상: FormAuthenticationSuccessHandler
 
     /**
      * 시큐리티 세팅
@@ -51,7 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                .antMatchers("/","/users").permitAll()
+                .antMatchers("/",
+                                        "/users",
+//                                        "/user/login/**",
+                                        "/login*").permitAll()              // exception 발생 시, 유도 경로를 login* 지정
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -63,6 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")                 // 인증 성공 시, 이동 URL
                 .successHandler(formAuthenticationSuccessHandler)
+                .failureHandler(formAuthenticationFailureHandler)
                 .permitAll()
         ;
     }

@@ -18,10 +18,10 @@ import java.io.IOException;
 public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     //
-    private RequestCache requestCache = new HttpSessionRequestCache();
+    private final RequestCache requestCache = new HttpSessionRequestCache();
 
     //
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     /**
      * 로그인 성공 시, 핸들러
