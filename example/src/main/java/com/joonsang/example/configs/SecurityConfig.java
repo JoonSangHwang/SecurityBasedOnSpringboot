@@ -1,10 +1,12 @@
 package com.joonsang.example.configs;
 
 
+import com.joonsang.example.configs.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -62,16 +64,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 로그인
-     *
-     * UserDetailsService 객체를 커스터마이징 함
-     * - CustomUserDetailsService 클래스
-     *
-     * 로그인 시, loadUserByUsername() 에서 ID 를 DB 에서 조회 후 권한 생성 및 유저 정보 반환
-     * - AccountContext 클래스에서 UserDetails 객체를 반환 하도록 함
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+//        auth.userDetailsService(userDetailsService);
+        auth.authenticationProvider(authenticationProvider());
+    }
+
+    @Bean
+    private AuthenticationProvider authenticationProvider() {
+        return new CustomAuthenticationProvider();
     }
 
 
