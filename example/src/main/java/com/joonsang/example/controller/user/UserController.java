@@ -7,6 +7,8 @@ import com.joonsang.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +34,9 @@ public class UserController {
         return "user/login/register";
     }
 
+    /**
+     * 회원 가입
+     */
     @PostMapping("/users")
     public String createUser(AccountDto accountDto) {
 
@@ -48,5 +53,7 @@ public class UserController {
 
         return "redirect:/";
     }
+
+
 
 }

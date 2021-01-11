@@ -24,14 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     /**
-     * 커스터마이징 userDetailsService 인증 처리
-     * - 로그인 할 때, DB 에서 사용자를 조회하여 인증 처리함.
+     * 시큐리티 세팅
      */
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
-
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 
@@ -66,28 +60,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    /**
+     * 로그인
+     *
+     * UserDetailsService 객체를 커스터마이징 함
+     * - CustomUserDetailsService 클래스
+     *
+     * 로그인 시, loadUserByUsername() 에서 ID 를 DB 에서 조회 후 권한 생성 및 유저 정보 반환
+     * - AccountContext 클래스에서 UserDetails 객체를 반환 하도록 함
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
 
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//
-//        // 패스워드 생성 (기본 패스워드는 생성 안 됨)
-//        String password = passwordEncoder().encode("1111");
-//
-//        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
-//        auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER", "USER");
-//        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN", "MANAGER", "USER");
-//    }
-//
-//    /**
-//     * 비밀번호를 안전하게 암호화 하도록 제공
-//     * @return
-//     */
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        // 패스워드 암호화 처리
-//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//    }
-
+    /**
+     * 비밀번호를 안전하게 암호화 하도록 제공
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // 패스워드 암호화 처리
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 }
