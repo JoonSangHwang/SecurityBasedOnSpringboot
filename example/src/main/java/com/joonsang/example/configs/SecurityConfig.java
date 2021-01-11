@@ -1,6 +1,7 @@
 package com.joonsang.example.configs;
 
 
+import com.joonsang.example.configs.handler.FormAuthenticationSuccessHandler;
 import com.joonsang.example.configs.provider.FormAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -27,7 +28,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private AuthenticationDetailsSource authenticationDetailsSource;
+    private AuthenticationDetailsSource authenticationDetailsSource;        // DI 대상: FormAuthenticationSuccessHandler
+
+    @Autowired
+    private FormAuthenticationSuccessHandler formAuthenticationSuccessHandler;
 
     /**
      * 시큐리티 세팅
@@ -58,6 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login_proc")      // Form 태그의 Action URL
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")                 // 인증 성공 시, 이동 URL
+                .successHandler(formAuthenticationSuccessHandler)
                 .permitAll()
         ;
     }
