@@ -47,7 +47,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated()
         .and()
-                .formLogin();
+                .formLogin()
+                .loginPage("/login")                    // 로그인 페이지
+                .loginProcessingUrl("/login_proc")      // Form 태그의 Action URL
+                .defaultSuccessUrl("/")                 // 인증 성공 시, 이동 URL
+                .permitAll()
+        ;
     }
 
     /**
