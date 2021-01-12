@@ -1,13 +1,13 @@
 package com.joonsang.example.configs;
 
 
+import com.joonsang.example.configs.common.FormAuthenticationDetailsSource;
 import com.joonsang.example.configs.handler.*;
 import com.joonsang.example.configs.provider.FormAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,11 +17,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -31,13 +31,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private AuthenticationDetailsSource authenticationDetailsSource;            // DI 대상: FormAuthenticationDetailsSource
+    private FormAuthenticationDetailsSource authenticationDetailsSource;
 
     @Autowired
-    private formAuthenticationFailureHandler formAuthenticationFailureHandler;  // DI 대상: FormAuthenticationFailureHandler
+    private AuthenticationSuccessHandler formAuthenticationSuccessHandler;
 
     @Autowired
-    private FormAuthenticationSuccessHandler formAuthenticationSuccessHandler;  // DI 대상: FormAuthenticationSuccessHandler
+    private AuthenticationFailureHandler formAuthenticationFailureHandler;
+
 
     /**
      * 시큐리티 세팅
@@ -74,7 +75,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(formAuthenticationSuccessHandler)
                 .failureHandler(formAuthenticationFailureHandler)
                 .permitAll()
+        .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
         ;
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+        accessDeniedHandler.setErrorPage("/denied");
+        return accessDeniedHandler;
     }
 
     /**

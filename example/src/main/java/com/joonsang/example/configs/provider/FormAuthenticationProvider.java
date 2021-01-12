@@ -45,13 +45,13 @@ public class FormAuthenticationProvider implements AuthenticationProvider {
 
         // 패스워드 검증 - 입력한 패스워드와 암호화 된 패스워드 일치 검증
         if (!passwordEncoder.matches(password, accountContext.getAccount().getPassword())) {
-            throw new BadCredentialsException("BadCredentialsException");
+            throw new BadCredentialsException("Invalid Password");
         }
 
         FormWebAuthenticationDetails formWebAuthenticationDetails = (FormWebAuthenticationDetails) authentication.getDetails();
         String secretKey = formWebAuthenticationDetails.getSecretKey();
-        if (secretKey == null || "secret".equals(secretKey)) {
-            throw new InsufficientAuthenticationException("InsufficientAuthenticationException");
+        if (secretKey == null || !"secret".equals(secretKey)) {
+            throw new InsufficientAuthenticationException("Invalid Secret");
         }
 
         /* 위 검증을 다 완료할 경우, Provider 객체는 토큰을 생성한다. */

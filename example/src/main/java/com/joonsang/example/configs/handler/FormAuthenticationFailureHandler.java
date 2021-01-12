@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class formAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 

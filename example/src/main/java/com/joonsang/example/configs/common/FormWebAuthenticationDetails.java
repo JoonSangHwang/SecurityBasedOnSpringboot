@@ -9,12 +9,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class FormWebAuthenticationDetails extends WebAuthenticationDetails {
 
-    private String secretKey;
+    private final String secretKey;
 
     public FormWebAuthenticationDetails(HttpServletRequest request) {
         super(request);
-
-        String secretKey = request.getParameter("secret_key");
+        secretKey = request.getParameter("secret_key");
     }
 
     public String getSecretKey() {
