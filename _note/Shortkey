@@ -30,7 +30,8 @@ F3                  : Find next (Eclipse: Ctrl + K)
 Shift + F3          : Find previous (Eclipse: Ctrl + Shift + K)
 
 
-Settings 메뉴 창을 열고 (단축키 Ctrl + Alt + S)
+Ctrl + Alt + S      : Settings 메뉴
+Ctrl + Shift + F12  : 전체화면
 
 
 # 참고

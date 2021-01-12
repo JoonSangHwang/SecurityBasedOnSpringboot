@@ -34,17 +34,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private FormAuthenticationDetailsSource authenticationDetailsSource;
 
     @Autowired
-    private AuthenticationSuccessHandler formAuthenticationSuccessHandler;
+    private AuthenticationSuccessHandler formAuthenticationSuccessHandler;          // 로그인 성공 후, 핸들러
 
     @Autowired
-    private AuthenticationFailureHandler formAuthenticationFailureHandler;
+    private AuthenticationFailureHandler formAuthenticationFailureHandler;          // 로그인 실패 후, 핸들러
 
 
     /**
      * 시큐리티 세팅
      *
      * 참고: CSRF 기능이 활성화 되어 있을 경우에는 POST 방식의 요청에 한해서 LogoutFilter 가 동작
-     *      CSRF 기능을 비활성화 할 경우에는 GET 방식도 LogoutFilter 가 처리
+     *       CSRF 기능을 비활성화 할 경우에는 GET 방식도 LogoutFilter 가 처리
      */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -54,30 +54,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setForceEncoding(true);
 
         http
-                .addFilterBefore(filter, CsrfFilter.class);
+                .addFilterBefore(filter, CsrfFilter.class);                 // 커스텀 필터 추가 (Default: UsernamePasswordAuthenticationFilter 보다 먼저 실행된다)
 
         http
-                .authorizeRequests()
-                .antMatchers("/",
-                                        "/users",
-//                                        "/user/login/**",
-                                        "/login*").permitAll()              // exception 발생 시, 유도 경로를 login* 지정
-                .antMatchers("/mypage").hasRole("USER")
-                .antMatchers("/messages").hasRole("MANAGER")
-                .antMatchers("/config").hasRole("ADMIN")
+                .authorizeRequests()                                        //== 승인 ==
+                .antMatchers("/",                             // [URL] /
+                                        "/users",                           // [URL] /users
+//                                        "/user/login/**",                 // [URL] /
+                                        "/login*").permitAll()              // [URL] /login*
+                .antMatchers("/mypage").hasRole("USER")       // [접근 권한] USER
+                .antMatchers("/messages").hasRole("MANAGER")  // [접근 권한] MANAGER
+                .antMatchers("/config").hasRole("ADMIN")      // [접근 권한] ADMIN
                 .anyRequest().authenticated()
+
         .and()
-                .formLogin()
-                .loginPage("/login")                    // 로그인 페이지
-                .loginProcessingUrl("/login_proc")      // Form 태그의 Action URL
-                .authenticationDetailsSource(authenticationDetailsSource)
-                .defaultSuccessUrl("/")                 // 인증 성공 시, 이동 URL
-                .successHandler(formAuthenticationSuccessHandler)
-                .failureHandler(formAuthenticationFailureHandler)
-                .permitAll()
+                .formLogin()                                                //== 로그인 ==
+                .loginPage("/login")                                        // 로그인 페이지
+                .loginProcessingUrl("/login_proc")                          // Form 태그의 Action URL
+                .authenticationDetailsSource(authenticationDetailsSource)   // username, password 이외에 추가 파라미터 처리
+                .defaultSuccessUrl("/")                                     // 인증 성공 시, 이동 URL
+                .successHandler(formAuthenticationSuccessHandler)           // 로그인 성공 후, 핸들러
+                .failureHandler(formAuthenticationFailureHandler)           // 로그인 실패 후, 핸들러
+                .permitAll()                                                // 로그인 화면은 접근 권한 없음
         .and()
-                .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler())
+                .exceptionHandling()                                        // 로그인 예외, 핸들러
+                .accessDeniedHandler(accessDeniedHandler())                 // 인가 거부 처리 (권한을 가지지 않은 사용자가 페이지에 접근)
         ;
     }
 

@@ -21,8 +21,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         String deiniedUrl = errorPage + "?exception=" + accessDeniedException.getMessage();
         response.sendRedirect(deiniedUrl);
-
-
     }
 
     public void setErrorPage(String errorPage) {

@@ -21,8 +21,9 @@ public class FormAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
-    public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException exception) throws IOException, ServletException {
-
+    public void onAuthenticationFailure(final HttpServletRequest request,
+                                        final HttpServletResponse response,
+                                        final AuthenticationException exception) throws IOException, ServletException {
         String errorMessage = "";
 
         if(exception instanceof BadCredentialsException) {

@@ -43,8 +43,6 @@ public class UserController {
         ModelMapper modelMapper = new ModelMapper();
         Account account = modelMapper.map(accountDto, Account.class);
 
-        System.out.println("account : " + account);
-
         // 패스워드 암호화
         account.setPassword(passwordEncoder.encode(account.getPassword()));
 
