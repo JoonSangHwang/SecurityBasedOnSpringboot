@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    url: jdbc:h2:tcp://localhost/~/spring
+  jpa:
+    hibernate:
+      #      ddl-auto: create
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # 개발 테스트 리로드
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+logging.level:
+  org.hibernate.SQL: debug
+server:
+  port: 8035
