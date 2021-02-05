@@ -23,18 +23,18 @@ public class HelloController {
     @GetMapping("/info")
     public String info(Model model) {
         model.addAttribute("message", "Info");
-        return "index";
+        return "info";
     }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         model.addAttribute("message", "dashboard");
-        return "index";
+        return "dashboard";
     }
 
     @GetMapping("/admin")
     public String admin(Model model, Principal principal) {
         model.addAttribute("message", "admin");
-        return "index";
+        return "admin";
     }
 }
