@@ -33,6 +33,8 @@ Shift + F3          : Find previous (Eclipse: Ctrl + Shift + K)
 Ctrl + Alt + S      : Settings 메뉴
 Ctrl + Shift + F12  : 전체화면
 
+Ctrl + o            : Override 가능한 메서드 목록
+
 
 # 참고
 psvm        : public static void main

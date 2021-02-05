@@ -14,6 +14,7 @@ public class HelloController {
         if (principal == null) {
             model.addAttribute("message", "Hello Guest");
         } else {
+            // 초기 name 은 "user"
             model.addAttribute("message", "Hello " + principal.getName());
         }
         return "index";
