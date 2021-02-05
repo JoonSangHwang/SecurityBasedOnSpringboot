@@ -17,7 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 요청 인가
         http.authorizeRequests()
-                .mvcMatchers("/","/info").permitAll()
+                .mvcMatchers("/","/info","/account/**").permitAll()
                 .mvcMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()   // 기타 요청은, 인증만 하면 접근 가능
         .and()
@@ -27,16 +27,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
-    // 인 메모리 유저 추가
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        /**
-         * Prefix
-         * - 패스워드 인코더
-         * - noop: 사용하지 않음
-         */
-        auth.inMemoryAuthentication()
-                .withUser("memberA").password("{noop}123").roles("USER").and()
-                .withUser("admin").password("{noop}admin").roles("ADMIN");
-    }
+
+    // 이 메소드가 있으면 PasswordEncoder 와 함께 쓸 수 없는데... 이유가 뭘까?
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        /**
+//         * 인 메모리 유저 추가
+//         *
+//         * Prefix
+//         * - 패스워드 인코더
+//         * - noop: 사용하지 않음
+//         */
+//        auth.inMemoryAuthentication()
+//                .withUser("memberA").password("{noop}123").roles("USER").and()
+//                .withUser("admin").password("{noop}admin").roles("ADMIN");
+//    }
 }
