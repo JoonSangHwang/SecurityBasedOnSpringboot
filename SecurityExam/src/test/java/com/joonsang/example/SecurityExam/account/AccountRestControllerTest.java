@@ -1,5 +1,6 @@
 package com.joonsang.example.SecurityExam.account;
 
+import com.joonsang.example.SecurityExam.entity.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.transaction.Transactional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,11 +27,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@Transactional      // 독립적인 테스트를 위해 Rollback 트랜잭션
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AccountRestControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    AccountService accountService;
 
     @Test
     @DisplayName("[익명 사용자] index 페이지 접근")
@@ -110,8 +118,26 @@ class AccountRestControllerTest {
     public void admin_admin() throws Exception {
         // joonsang 이라는 유저가 이미 로그인 된 상태로, 인덱스 페이지에 접근한 상태 Mocking
         mockMvc.perform(
-                get("/")
-                        .with(user("joonsang").roles("ADMIN"))
+                    get("/")
+                    .with(user("joonsang").roles("ADMIN"))
+        )
+                .andDo(print())
+                .andExpect(status().isOk())      // 403 에러
+        ;
+    }
+
+    @Test
+    @DisplayName("Form 로그인")
+    public void form_login() throws Exception {
+        Account account = new Account();
+        account.setUsername("joonsang");
+        account.setPassword("123");
+        account.setRole("USER");
+        accountService.createNewAccount(account);
+
+        mockMvc.perform(
+                    formLogin()
+                    .user("joonsang").password("123")
         )
                 .andDo(print())
                 .andExpect(status().isOk())      // 403 에러
